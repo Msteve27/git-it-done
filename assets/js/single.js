@@ -1,4 +1,5 @@
 let issueContainerEl = document.querySelector("#issues-container");
+let limitwarningEl = document.querySelector("#limit-warning");
 
 let getRepoIssues = function(repo) {
 
@@ -10,6 +11,12 @@ let getRepoIssues = function(repo) {
     if (response.ok) {
       response.json().then(function(data) {
         displayIssues(data);
+        
+        // check if api has paginated issues
+        if(response.headers.get("Link")) {
+            displayWarning(repo);
+          }
+
         });
     }
     else {
@@ -53,4 +60,17 @@ let displayIssues = function(issues) {
         issueEl.appendChild(typeEl);
         issueContainerEl.appendChild(issueEl);
     }
+};
+
+let displayWarning = function(repo) {
+    // add text to warning container 
+    limitwarningEl.textContent = "To see more than 30 issues, visit ";
+
+    let linkEl = document.createElement("a");
+    linkEl.textContent = "See more Issues on GitHub.com";
+    linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
+    linkEl.setAttribute("target", "_blank");
+
+    // append to warning container
+    limitwarningEl.appendChild(linkEl);
 };
